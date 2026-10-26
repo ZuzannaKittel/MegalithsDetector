@@ -1,0 +1,25 @@
+# Virtual Environment
+venv/
+megaliths_venv/
+*.venv
+
+# Python Caches & Build Artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.DS_Store
+
+# Data & Heavy Binaries (Keep data local, track only code)
+data/raw/*
+data/processed/*
+data/dataset/*
+
+# Exception: keep folder structure in git using .gitkeep if desired
+!data/**/.gitkeep
+
+# Model Checkpoints & Logs
+*.pth
+*.pt
+*.onnx
+runs/
+wandb/
