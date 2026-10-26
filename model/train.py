@@ -5,9 +5,15 @@ from torch.utils.data import DataLoader, random_split
 from torchvision import models
 from pathlib import Path
 import time
+import sys
 
-# Import your custom dataset
-from dataset import MegalithDataset
+# Add project root directory (megaliths-detector) to Python path
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.append(str(project_root))
+
+# Import the custom dataset class
+from dataset_prep.dataset import MegalithDataset
 
 def get_adapted_resnet():
     """Loads a pre-trained ResNet18 and adapts it for 1-channel LRM data."""
