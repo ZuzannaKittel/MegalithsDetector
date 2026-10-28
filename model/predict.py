@@ -60,15 +60,40 @@ def non_max_suppression(boxes, iou_threshold=0.3):
 def scan_map(asc_path: Path, threshold: float = 0.65):
     device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
     print(f"\n==========================================")
-    print(f"Scanning: {asc_path.name}")
+    print(f"Scanning: {asc_path.name} on {device.type.upper()}")
     print(f"==========================================")
 
     model_path = project_root / "best_megalith_model.pth"
+    if not model_path.exists():
+        print(f"Error: Model weights not found at {model_path}")
+        return
+
     model = get_adapted_resnet().to(device)
     model.load_state_dict(torch.load(model_path, map_location=device))
     model.eval()
 
-    dem = load_asc_grid(asc_path)
+    # Unpack the spatial metadata header alongside the DEM
+    dem, header = load_asc_grid(asc_path)
+    
+    # Extract spatial parameters safely (handles corner & center header formats)
+    cellsize = header.get('cellsize', 1.0)
+
+    if 'xllcorner' in header:
+        xll = header['xllcorner']
+    elif 'xllcenter' in header:
+        xll = header['xllcenter'] - (cellsize / 2.0)
+    else:
+        xll = 0.0
+        print("Warning: Neither xllcorner nor xllcenter found in header.")
+
+    if 'yllcorner' in header:
+        yll = header['yllcorner']
+    elif 'yllcenter' in header:
+        yll = header['yllcenter'] - (cellsize / 2.0)
+    else:
+        yll = 0.0
+        print("Warning: Neither yllcorner nor yllcenter found in header.")
+
     nan_mask = np.isnan(dem)
     dem_filled = np.where(nan_mask, np.nanmean(dem), dem)
     dem_trend = gaussian_filter(dem_filled, sigma=20.0)
@@ -93,11 +118,11 @@ def scan_map(asc_path: Path, threshold: float = 0.65):
             for x in range(0, w - patch_size + 1, stride):
                 patch = lrm_clean[y:y+patch_size, x:x+patch_size]
 
-                # Ignore border regions with >30% NaN values
+                # Skip border regions (>30% NaN)
                 if np.isnan(lrm[y:y+patch_size, x:x+patch_size]).sum() > (patch_size * patch_size * 0.3):
                     continue
 
-                # Z-Score Normalization
+                # Z-Score Normalization matching training
                 patch_std = np.std(patch)
                 if patch_std > 1e-5:
                     patch_norm = (patch - np.mean(patch)) / patch_std
@@ -112,34 +137,41 @@ def scan_map(asc_path: Path, threshold: float = 0.65):
                 if confidence >= threshold:
                     raw_detections.append((x, y, confidence))
 
-    # Apply NMS to collapse duplicate sliding window boxes
     filtered_detections = non_max_suppression(raw_detections, iou_threshold=0.3)
     print(f"Raw window hits: {len(raw_detections)} -> Merged detections after NMS: {len(filtered_detections)}")
 
-    # Draw filtered boxes & export individual crops
     draw = ImageDraw.Draw(full_hillshade)
     crop_dir = project_root / "data" / "predictions" / "crops" / asc_path.stem
     crop_dir.mkdir(parents=True, exist_ok=True)
 
     for i, (x, y, conf) in enumerate(filtered_detections):
-        print(f"  [Detection #{i+1}] (X: {x:04d}, Y: {y:04d}) | Confidence: {conf*100:.1f}%")
+        # Georeferencing Calculation (Center of 512x512 bounding box)
+        center_x_pixel = x + (patch_size / 2)
+        center_y_pixel = y + (patch_size / 2)
         
-        # Draw red bounding box
+        # Convert pixel offset to PL-1992 (EPSG:2180) coordinates
+        geo_x = xll + (center_x_pixel * cellsize)
+        geo_y = yll + ((h - center_y_pixel) * cellsize)
+        
+        print(f"  [Detection #{i+1}] Conf: {conf*100:.1f}% | PL-1992 (X: {geo_x:.1f}, Y: {geo_y:.1f})")
+        
+        # Annotate full hillshade map & save individual crop tile
         draw.rectangle([x, y, x + patch_size, y + patch_size], outline="red", width=5)
-        
-        # Crop individual patch PNG for dad
         crop = full_hillshade.crop((x, y, x + patch_size, y + patch_size))
-        crop.save(crop_dir / f"detection_{i+1:02d}_conf_{int(conf*100)}pct_x{x}_y{y}.png")
+        crop.save(crop_dir / f"det_{i+1:02d}_conf_{int(conf*100)}pct_PL1992_X{int(geo_x)}_Y{int(geo_y)}.png")
 
     if len(filtered_detections) > 0:
         out_dir = project_root / "data" / "predictions"
         out_path = out_dir / f"predicted_{asc_path.stem}.png"
         full_hillshade.save(out_path)
         print(f"Saved annotated map: {out_path}")
-        print(f"Saved {len(filtered_detections)} crop tiles to: {crop_dir}")
 
 def scan_all_raw_files(threshold: float = 0.65):
     raw_files = sorted(list((project_root / "data" / "raw").glob("*.asc")))
+    if not raw_files:
+        print("No .asc files found in data/raw/")
+        return
+        
     for asc_file in raw_files:
         scan_map(asc_file, threshold=threshold)
 
