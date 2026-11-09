@@ -75,7 +75,7 @@ body {
 button,
 input,
 select {
-    font: inherit;
+    font-family: "Questrial", sans-serif;
 }
 
 button {
@@ -1221,10 +1221,11 @@ a {
 ========================================================= */
 
 .candidate-list {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-    min-width: 0;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 6px;
 }
 
 .candidate-card {

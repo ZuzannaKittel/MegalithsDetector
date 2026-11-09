@@ -141,8 +141,19 @@ def inject_synthetic_barrows(
 
 if __name__ == "__main__":
     project_dir = Path(__file__).resolve().parent.parent
-    train_neg_dir = project_dir / "data" / "dataset" / "train" / "negative"
-    train_pos_dir = project_dir / "data" / "dataset" / "train" / "positive"
-    synth_png_dir = project_dir / "data" / "dataset" / "synthetic_verification"
-    
-    inject_synthetic_barrows(train_neg_dir, train_pos_dir, synth_png_dir, num_samples=150)
+
+    split_dir = project_dir / "data" / "dataset" / "splits"
+
+    train_neg_dir = split_dir / "train" / "negative"
+    train_pos_dir = split_dir / "train" / "positive"
+
+    synth_png_dir = (
+        split_dir / "synthetic_verification"
+    )
+
+    inject_synthetic_barrows(
+        train_neg_dir,
+        train_pos_dir,
+        synth_png_dir,
+        num_samples=150
+    )

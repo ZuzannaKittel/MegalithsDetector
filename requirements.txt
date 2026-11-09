@@ -1,43 +1,12 @@
-archspec @ file:///home/conda/feedstock_root/build_artifacts/archspec_1737352602016/work
-backports.zstd @ file:///Users/runner/miniforge3/conda-bld/bld/rattler-build_backports.zstd_1767045003/work
-blinker==1.9.0
-boltons @ file:///home/conda/feedstock_root/build_artifacts/boltons_1749686179973/work
-Brotli @ file:///Users/runner/miniforge3/conda-bld/brotli-split_1764017116075/work
-certifi @ file:///home/conda/feedstock_root/build_artifacts/certifi_1767500808759/work/certifi
-cffi @ file:///Users/runner/miniforge3/conda-bld/cffi_1761203042365/work
-charset-normalizer @ file:///home/conda/feedstock_root/build_artifacts/charset-normalizer_1760437218288/work
-click==8.4.1
-conda @ file:///Users/runner/miniforge3/conda-bld/conda_1770031518347/work/conda-src
-conda-libmamba-solver @ file:///home/conda/feedstock_root/build_artifacts/conda-libmamba-solver_1770137318695/work/src
-conda-package-handling @ file:///home/conda/feedstock_root/build_artifacts/conda-package-handling_1736345463896/work
-conda_package_streaming @ file:///home/conda/feedstock_root/build_artifacts/conda-package-streaming_1751548120229/work
-distro @ file:///home/conda/feedstock_root/build_artifacts/distro_1734729835256/work
+# Web application
 Flask==3.0.3
-frozendict @ file:///Users/runner/miniforge3/conda-bld/frozendict_1763082883332/work
-h2 @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_h2_1756364871/work
-hpack @ file:///home/conda/feedstock_root/build_artifacts/hpack_1737618293087/work
-hyperframe @ file:///home/conda/feedstock_root/build_artifacts/hyperframe_1737618333194/work
-idna @ file:///home/conda/feedstock_root/build_artifacts/idna_1760286409563/work
-itsdangerous==2.2.0
-Jinja2==3.1.6
-jsonpatch @ file:///home/conda/feedstock_root/build_artifacts/jsonpatch_1733814567314/work
-jsonpointer @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_jsonpointer_1765026384/work
-libmambapy @ file:///Users/runner/miniforge3/conda-bld/bld/rattler-build_libmambapy_1767884201/work/libmambapy
-MarkupSafe==3.0.3
-menuinst @ file:///Users/runner/miniforge3/conda-bld/menuinst_1765733155400/work
-msgpack @ file:///Users/runner/miniforge3/conda-bld/msgpack-python_1762504076140/work
-packaging @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_packaging_1769093650/work
-platformdirs @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_platformdirs_1764950726/work
-pluggy @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_pluggy_1764896838/work
-pycosat @ file:///Users/runner/miniforge3/conda-bld/pycosat_1757744740287/work
-pycparser @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_pycparser_1733195786/work
-PySocks @ file:///home/conda/feedstock_root/build_artifacts/pysocks_1733217236728/work
-requests @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_requests_1766926974/work
-ruamel.yaml @ file:///Users/runner/miniforge3/conda-bld/bld/rattler-build_ruamel.yaml_1766175808/work
-ruamel.yaml.clib @ file:///Users/runner/miniforge3/conda-bld/bld/rattler-build_ruamel.yaml.clib_1766159543/work
-setuptools==82.0.0
-tqdm @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_tqdm_1770153424/work
-truststore @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_truststore_1766494826/work
-urllib3 @ file:///home/conda/feedstock_root/build_artifacts/urllib3_1767817748113/work
-Werkzeug==3.1.8
-zstandard==0.25.0
+
+# Numerical processing and visualisation
+numpy
+scipy
+matplotlib
+Pillow
+
+# Machine learning
+torch
+torchvision
