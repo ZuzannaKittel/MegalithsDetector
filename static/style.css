@@ -19,7 +19,8 @@
     /* Earthy accents */
     --accent-mustard: #A49947;
 
-    --accent-olive: #899477;
+    /*--accent-olive: #899477;*/
+    --accent-olive: #94B066;
 
     --accent-terracotta: #C7795C;
     --accent-brown: #A68A6A;
@@ -33,9 +34,7 @@
         0 5px 0 #927638,
         0 9px 18px rgba(0, 0, 0, 0.3);
 
-    /* Fonts */
-    --font-display: 'Alegreya Sans SC', sans-serif;
-    --font-body: 'Pontano Sans', sans-serif;
+    --font: 'Questrial', sans-serif;
 
     /* Layout */
     --radius-sm: 8px;
@@ -65,7 +64,7 @@ body {
     min-height: 100vh;
     background: var(--bg-main);
     color: var(--text-primary);
-    font-family: var(--font-body);
+    font-family: var(--font);
     font-size: 16px;
     font-weight: 600;
     line-height: 1.5;
@@ -75,7 +74,7 @@ body {
 button,
 input,
 select {
-    font-family: "Questrial", sans-serif;
+    font: inherit;
 }
 
 button {
@@ -131,7 +130,7 @@ a {
 }
 
 .brand-name {
-    font-family: var(--font-display);
+    font-family: var(--font);
     font-size: 22px;
     font-weight: 700;
     letter-spacing: -0.8px;
@@ -175,7 +174,7 @@ a {
 }
 
 .rail-intro h1 {
-    font-family: var(--font-display);
+    font-family: var(--font);
     font-size: clamp(36px, 3vw, 45px);
     line-height: 1.04;
     font-weight: 700;
@@ -246,7 +245,7 @@ a {
 }
 
 #dem-select:focus {
-    border-color: var(--accent-mustard);
+    border-color: var(--accent-terracotta);
     background-color: var(--bg-raised);
 }
 
@@ -270,11 +269,20 @@ a {
 .threshold-value {
     color: var(--accent-mustard);
 
-    font-family: var(--font-display);
+    font-family: var(--font);
     font-size: 25px;
     font-weight: 700;
 
     font-variant-numeric: tabular-nums;
+    transition: color 0.15s ease;
+}
+
+.threshold-value.is-low {
+    color: var(--accent-terracotta);
+}
+
+.threshold-value.is-high {
+    color: var(--accent-olive);
 }
 
 
@@ -316,6 +324,16 @@ a {
     transition: transform 0.15s;
 }
 
+#threshold.is-low::-webkit-slider-thumb {
+    background: var(--accent-terracotta);
+    box-shadow: 0 0 0 2px var(--accent-terracotta);
+}
+
+#threshold.is-high::-webkit-slider-thumb {
+    background: var(--accent-olive);
+    box-shadow: 0 0 0 2px var(--accent-olive);
+}
+
 #threshold::-webkit-slider-thumb:hover {
     transform: scale(1.15);
 }
@@ -332,6 +350,16 @@ a {
     box-shadow: 0 0 0 2px var(--accent-mustard);
 
     cursor: grab;
+}
+
+#threshold.is-low::-moz-range-thumb {
+    background: var(--accent-terracotta);
+    box-shadow: 0 0 0 2px var(--accent-terracotta);
+}
+
+#threshold.is-high::-moz-range-thumb {
+    background: var(--accent-olive);
+    box-shadow: 0 0 0 2px var(--accent-olive);
 }
 
 .range-labels {
@@ -600,7 +628,7 @@ a {
 }
 
 .map-placeholder h2 {
-    font-family: var(--font-display);
+    font-family: var(--font);
     font-size: 29px;
     font-weight: 700;
     letter-spacing: -0.7px;
@@ -641,7 +669,7 @@ a {
 
     padding: 14px 2px 0;
 
-    color: var(--accent-olive);
+    color: var(--text-secondary);
 
     font-size: 13px;
     font-weight: 1000;
@@ -649,7 +677,7 @@ a {
 }
 
 .map-footer span:last-child {
-    color: var(--accent-olive);
+    color: var(--text-secondary);
 }
 
 
@@ -675,7 +703,7 @@ a {
 }
 
 .results-heading h2 {
-    font-family: var(--font-display);
+    font-family: var(--font);
     font-size: 28px;
     font-weight: 700;
     letter-spacing: -0.7px;
@@ -738,7 +766,7 @@ a {
 
     color: var(--text-primary);
 
-    font-family: var(--font-display);
+    font-family: var(--font);
     font-size: clamp(25px, 2.5vw, 34px);
     font-weight: 900;
     letter-spacing: -1px;
@@ -754,7 +782,7 @@ a {
 }
 
 .metric-device {
-    font-family: var(--font-body);
+    font-family: var(--font);
     font-size: 19px;
     font-weight: 800;
     letter-spacing: -0.5px;
@@ -809,7 +837,7 @@ a {
 }
 
 .inspector-heading h2 {
-    font-family: var(--font-display);
+    font-family: var(--font);
     font-size: 35px;
     font-weight: 700;
     line-height: 1.06;
@@ -824,7 +852,7 @@ a {
     place-items: center;
 
     color: var(--bg-deep);
-    background: var(--accent-olive);
+    background: var(--accent-mustard);
 
     border-radius: 50%;
 
@@ -850,7 +878,7 @@ a {
 }
 
 .empty-review h3 {
-    font-family: var(--font-display);
+    font-family: var(--font);
     font-size: 18px;
     font-weight: 700;
     margin-bottom: 5px;
@@ -1248,6 +1276,14 @@ a {
     transform: translateY(-1px);
 }
 
+.candidate-card.is-accepted {
+    border-color: var(--accent-olive);
+}
+
+.candidate-card.is-rejected {
+    border-color: var(--accent-terracotta);
+}
+
 .candidate-topline {
     display: flex;
     align-items: center;
@@ -1298,7 +1334,7 @@ a {
     border: 1px solid transparent;
     border-radius: 8px;
 
-    font-family: var(--font-body);
+    font-family: var(--font);
     font-size: 13px;
     font-weight: 900;
 
@@ -1359,7 +1395,7 @@ a {
     margin-top: 9px;
 
     color: var(--text-secondary);
-    font-family: var(--font-body);
+    font-family: var(--font);
     font-size: 13px;
     font-weight: 800;
 }

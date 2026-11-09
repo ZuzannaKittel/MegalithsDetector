@@ -22,7 +22,16 @@ let currentDetections = [];
 -------------------------------------------------- */
 
 function updateThresholdLabel() {
-    thresholdValue.textContent = Number(thresholdSlider.value).toFixed(2);
+    const threshold = Number(thresholdSlider.value);
+    thresholdValue.textContent = threshold.toFixed(2);
+
+    const isLow = threshold < DEFAULT_THRESHOLD;
+    const isHigh = threshold > DEFAULT_THRESHOLD;
+
+    thresholdValue.classList.toggle("is-low", isLow);
+    thresholdValue.classList.toggle("is-high", isHigh);
+    thresholdSlider.classList.toggle("is-low", isLow);
+    thresholdSlider.classList.toggle("is-high", isHigh);
 }
 
 thresholdSlider.value = String(DEFAULT_THRESHOLD);
@@ -86,6 +95,9 @@ function renderCandidates(detections) {
 
         const card = document.createElement("div");
         card.className = "candidate-card";
+        if (decision) {
+            card.classList.add(`is-${decision}`);
+        }
 
         const topLine = document.createElement("div");
         topLine.className = "candidate-topline";
@@ -134,7 +146,7 @@ function renderCandidates(detections) {
         status.className = "review-status";
 
         if (decision === "accepted") {
-            status.textContent = "STATUS: ACCEPTED FOR REVIEW";
+            status.textContent = "STATUS: ACCEPTED";
             status.classList.add("is-accepted");
         } else if (decision === "rejected") {
             status.textContent = "STATUS: REJECTED";
