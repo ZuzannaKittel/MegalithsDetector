@@ -1,0 +1,1466 @@
+
+
+/* ---------------------------------------------------------
+   01. DESIGN TOKENS
+--------------------------------------------------------- */
+
+:root {
+    /* Main backgrounds */
+    --bg-main: #201F1C;
+    --bg-deep: #191815;
+    --bg-raised: #292722;
+    --bg-input: #302D27;
+
+    /* Typography */
+    --text-primary: #F0EDE5;
+    --text-secondary: #B4ADA0;
+    --text-muted: #817B70;
+
+    /* Earthy accents */
+    --accent-mustard: #A49947;
+
+    --accent-olive: #899477;
+
+    --accent-terracotta: #C7795C;
+    --accent-brown: #A68A6A;
+
+    /* Structural elements */
+    --line: rgba(229, 221, 204, 0.13);
+    --line-strong: rgba(229, 221, 204, 0.22);
+
+    /* Shadows */
+    --shadow-button:
+        0 5px 0 #927638,
+        0 9px 18px rgba(0, 0, 0, 0.3);
+
+    /* Fonts */
+    --font-display: 'Alegreya Sans SC', sans-serif;
+    --font-body: 'Pontano Sans', sans-serif;
+
+    /* Layout */
+    --radius-sm: 8px;
+    --rail-width: 290px;
+    --inspector-width: 310px;
+}
+
+
+/* ---------------------------------------------------------
+   02. RESET & GLOBAL
+--------------------------------------------------------- */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    scrollbar-width: thin;
+    scrollbar-color: #625D50 transparent;
+}
+
+html {
+    min-height: 100%;
+    background: var(--bg-main);
+}
+
+body {
+    min-height: 100vh;
+    background: var(--bg-main);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
+::selection {
+    background: var(--accent-mustard);
+    color: var(--bg-deep);
+}
+
+
+/* ---------------------------------------------------------
+   03. APP SHELL
+--------------------------------------------------------- */
+
+.app-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 0 38px;
+}
+
+
+/* ---------------------------------------------------------
+   04. TOP NAVIGATION
+--------------------------------------------------------- */
+
+.topbar {
+    height: 76px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-bottom: 1px solid var(--line);
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.brand-name {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+}
+
+/* ---------------------------------------------------------
+   05. MAIN THREE-COLUMN LAYOUT
+--------------------------------------------------------- */
+
+.main-content {
+    flex: 1;
+
+    display: grid;
+
+    grid-template-columns:
+        var(--rail-width)
+        minmax(0, 1fr)
+        var(--inspector-width);
+
+    min-height: 0;
+}
+
+
+/* ---------------------------------------------------------
+   06. LEFT CONTROL RAIL
+--------------------------------------------------------- */
+
+.control-rail {
+    padding: 36px 27px 30px 0;
+
+    display: flex;
+    flex-direction: column;
+
+    border-right: 1px solid var(--line);
+
+    min-width: 0;
+}
+
+.rail-intro {
+    margin-bottom: 38px;
+}
+
+.rail-intro h1 {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 3vw, 45px);
+    line-height: 1.04;
+    font-weight: 700;
+    letter-spacing: -1.8px;
+
+    margin-bottom: 17px;
+}
+
+.rail-intro > p {
+    color: var(--text-secondary);
+
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.7;
+
+    max-width: 240px;
+}
+
+
+/* ---------------------------------------------------------
+   07. FORM ELEMENTS
+--------------------------------------------------------- */
+
+.tool-section {
+    margin-bottom: 33px;
+}
+
+.field-label {
+    display: block;
+
+    color: var(--text-primary);
+
+    font-size: 15px;
+    font-weight: 800;
+
+    margin-bottom: 12px;
+}
+
+#dem-select {
+    width: 100%;
+    height: 48px;
+
+    padding: 0 15px;
+
+    appearance: none;
+
+    color: var(--text-primary);
+    background-color: var(--bg-input);
+
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+
+    font-size: 15px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    outline: none;
+
+    transition: border-color 0.2s, background 0.2s;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23D9B75B' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+
+    padding-right: 38px;
+}
+
+#dem-select:focus {
+    border-color: var(--accent-mustard);
+    background-color: var(--bg-raised);
+}
+
+#dem-select option {
+    background: var(--bg-input);
+    color: var(--text-primary);
+}
+
+
+/* ---------------------------------------------------------
+   08. CONFIDENCE THRESHOLD
+--------------------------------------------------------- */
+
+.threshold-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.threshold-value {
+    color: var(--accent-mustard);
+
+    font-family: var(--font-display);
+    font-size: 25px;
+    font-weight: 700;
+
+    font-variant-numeric: tabular-nums;
+}
+
+
+/* Custom range slider */
+
+#threshold {
+    width: 100%;
+    height: 7px;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    background: var(--bg-input);
+
+    border-radius: 20px;
+    outline: none;
+
+    cursor: pointer;
+
+    margin: 12px 0 9px;
+}
+
+#threshold::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+
+    width: 19px;
+    height: 19px;
+
+    background: var(--accent-mustard);
+
+    border: 3px solid var(--bg-main);
+    border-radius: 50%;
+
+    box-shadow: 0 0 0 2px var(--accent-mustard);
+
+    cursor: grab;
+
+    transition: transform 0.15s;
+}
+
+#threshold::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+#threshold::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+
+    background: var(--accent-mustard);
+
+    border: 3px solid var(--bg-main);
+    border-radius: 50%;
+
+    box-shadow: 0 0 0 2px var(--accent-mustard);
+
+    cursor: grab;
+}
+
+.range-labels {
+    display: flex;
+    justify-content: space-between;
+
+    color: var(--text-muted);
+
+    font-size: 13px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+
+/* Threshold explanation */
+
+.info-copy {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+
+    margin-top: 23px;
+    margin-bottom: 17px;
+}
+
+.info-mark {
+    width: 21px;
+    height: 21px;
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    color: var(--bg-deep);
+    background: var(--accent-brown);
+
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.info-copy p {
+    color: var(--text-secondary);
+
+    font-size: 15px;
+    line-height: 1.65;
+    font-weight: 700;
+}
+
+.threshold-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    margin-top: 12px;
+}
+
+.hint-dot {
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+
+    margin-top: 6px;
+
+    border-radius: 50%;
+    background: var(--accent-terracotta);
+}
+
+.hint-dot-olive {
+    background: var(--accent-olive);
+}
+
+.threshold-hint p {
+    color: var(--text-muted);
+
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 700;
+}
+
+.threshold-hint strong {
+    color: var(--text-primary);
+    font-weight: 800;
+}
+
+
+/* ---------------------------------------------------------
+   09. PRIMARY ACTION BUTTON
+--------------------------------------------------------- */
+
+.action-section {
+    margin-top: 6px;
+}
+
+.scan-button {
+    width: 100%;
+    min-height: 54px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 19px;
+
+    color: var(--bg-deep);
+    background: var(--accent-mustard);
+
+    border: none;
+    border-radius: 13px;
+
+    font-size: 19px;
+    font-weight: 900;
+    letter-spacing: 0;
+
+    box-shadow: var(--shadow-button);
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        background 0.15s ease;
+}
+
+.scan-button:hover {
+    background: #E6C873;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 7px 0 #927638,
+        0 13px 24px rgba(0, 0, 0, 0.35);
+}
+
+.scan-button:active {
+    transform: translateY(4px);
+
+    box-shadow:
+        0 1px 0 #927638,
+        0 3px 8px rgba(0, 0, 0, 0.25);
+}
+
+.scan-button:focus-visible {
+    outline: 3px solid var(--text-primary);
+    outline-offset: 4px;
+}
+
+.button-arrow {
+    font-size: 21px;
+    font-weight: 900;
+}
+
+.scan-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.scan-message {
+    min-height: 22px;
+
+    margin-top: 15px;
+
+    color: var(--text-secondary);
+
+    font-size: 15px;
+    font-weight: 700;
+}
+
+
+/* ---------------------------------------------------------
+   10. CENTRAL TERRAIN WORKSPACE
+--------------------------------------------------------- */
+
+.terrain-workspace {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 34px 30px 35px;
+}
+
+.map-panel {
+    flex: 1;
+    min-height: 390px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.map-container {
+    flex: 1;
+    min-height: 390px;
+
+    position: relative;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--bg-deep);
+
+    border-radius: 18px;
+}
+
+
+/* Subtle background texture */
+
+.map-container::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+
+    opacity: 0.3;
+
+    background-image:
+        linear-gradient(rgba(225, 217, 199, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(225, 217, 199, 0.035) 1px, transparent 1px);
+
+    background-size: 35px 35px;
+
+    mask-image: linear-gradient(
+        to bottom,
+        transparent,
+        black 20%,
+        black 80%,
+        transparent
+    );
+}
+
+
+/* Empty state */
+
+.map-placeholder {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    max-width: 350px;
+
+    padding: 30px;
+
+    text-align: center;
+}
+
+.terrain-symbol {
+    width: 170px;
+
+    margin-bottom: 25px;
+
+    color: var(--accent-olive);
+    opacity: 0.8;
+}
+
+.terrain-symbol svg {
+    width: 100%;
+    height: auto;
+}
+
+.map-placeholder h2 {
+    font-family: var(--font-display);
+    font-size: 29px;
+    font-weight: 700;
+    letter-spacing: -0.7px;
+
+    margin-bottom: 9px;
+}
+
+.map-placeholder p {
+    color: var(--text-secondary);
+
+    font-size: 15px;
+    line-height: 1.7;
+    font-weight: 700;
+}
+
+
+/* Detection image */
+
+.result-image {
+    position: relative;
+    z-index: 2;
+
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+}
+
+
+/* Map footer */
+
+.map-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 14px 2px 0;
+
+    color: var(--accent-olive);
+
+    font-size: 13px;
+    font-weight: 1000;
+    letter-spacing: 1.2px;
+}
+
+.map-footer span:last-child {
+    color: var(--accent-olive);
+}
+
+
+/* ---------------------------------------------------------
+   11. RESULTS / DETECTION SUMMARY
+--------------------------------------------------------- */
+
+.results-section {
+    margin-top: 24px;
+    padding: 22px;
+    background: var(--bg-raised);
+    border: 1px solid var(--accent-mustard);
+    border-radius: 16px;
+}
+
+.results-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 15px;
+
+    margin-bottom: 24px;
+}
+
+.results-heading h2 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.7px;
+}
+
+.result-filename {
+    max-width: 220px;
+
+    color: var(--text-muted);
+
+    font-size: 14px;
+    font-weight: 800;
+
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.metric-item {
+    min-width: 0;
+    padding: 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: var(--bg-raised);
+    border: 1px solid var(--line-strong);
+    border-left: 3px solid var(--accent-mustard);
+    border-radius: 12px;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.metric-item:hover {
+    background: #353129;
+    transform: translateY(-1px);
+}
+
+.metric-highlight {
+    background: rgba(164, 153, 71, 0.16);
+    border-color: var(--accent-mustard);
+}
+
+.metric-label {
+    display: block;
+
+    color: var(--text-secondary);
+
+    font-size: 15px;
+    font-weight: 800;
+
+    margin-bottom: 9px;
+}
+
+.metric-value {
+    display: block;
+
+    color: var(--text-primary);
+
+    font-family: var(--font-display);
+    font-size: clamp(25px, 2.5vw, 34px);
+    font-weight: 900;
+    letter-spacing: -1px;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+
+    font-variant-numeric: tabular-nums;
+
+    overflow-wrap: anywhere;
+}
+
+.metric-highlight .metric-value {
+    color: #FFF1A8;
+}
+
+.metric-device {
+    font-family: var(--font-body);
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.metric-item > p {
+    color: var(--text-muted);
+
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 800;
+
+    margin-top: 0;
+}
+
+.results-disclaimer {
+    margin-top: 23px;
+    padding-left: 13px;
+
+    border-left: 2px solid var(--accent-terracotta);
+
+    color: var(--accent-terracotta);
+
+    font-size: 18px;
+    line-height: 1.7;
+    font-weight: 800;
+}
+
+
+/* ---------------------------------------------------------
+   12. RIGHT INSPECTOR PANEL
+--------------------------------------------------------- */
+
+.inspector-panel {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 36px 0 30px 27px;
+
+    border-left: 1px solid var(--line);
+}
+
+.inspector-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-bottom: 19px;
+}
+
+.inspector-heading h2 {
+    font-family: var(--font-display);
+    font-size: 35px;
+    font-weight: 700;
+    line-height: 1.06;
+    letter-spacing: -1px;
+}
+
+.review-count {
+    min-width: 35px;
+    height: 35px;
+
+    display: grid;
+    place-items: center;
+
+    color: var(--bg-deep);
+    background: var(--accent-olive);
+
+    border-radius: 50%;
+
+    font-size: 15px;
+    font-weight: 800;
+
+    font-variant-numeric: tabular-nums;
+}
+
+.inspector-description {
+    color: var(--text-secondary);
+
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.7;
+
+    margin-bottom: 27px;
+}
+
+.empty-review {
+    padding: 17px 0;
+    border-top: 1px solid var(--line);
+}
+
+.empty-review h3 {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.empty-review p {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 700;
+}
+
+
+/* ---------------------------------------------------------
+   13. FOOTER
+--------------------------------------------------------- */
+
+.app-footer {
+    min-height: 49px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    border-top: 1px solid var(--line);
+
+    color: var(--text-muted);
+
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.3px;
+}
+
+.app-footer span:first-child {
+    color: var(--text-secondary);
+}
+
+
+/* ---------------------------------------------------------
+   14. SCROLLBARS
+--------------------------------------------------------- */
+
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #625D50;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-brown);
+}
+
+
+/* ---------------------------------------------------------
+   15. RESPONSIVE: TABLETS
+--------------------------------------------------------- */
+
+@media (max-width: 1150px) {
+
+    :root {
+        --rail-width: 245px;
+        --inspector-width: 265px;
+    }
+
+    .app-shell {
+        padding: 0 24px;
+    }
+
+    .control-rail {
+        padding-right: 20px;
+    }
+
+    .terrain-workspace {
+        padding-left: 22px;
+        padding-right: 22px;
+    }
+
+    .inspector-panel {
+        padding-left: 20px;
+    }
+
+    .metrics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        row-gap: 25px;
+    }
+
+}
+
+
+/* ---------------------------------------------------------
+   16. RESPONSIVE: SMALL TABLETS
+--------------------------------------------------------- */
+
+@media (max-width: 900px) {
+
+    .main-content {
+        grid-template-columns: 225px minmax(0, 1fr);
+    }
+
+    .control-rail {
+        grid-row: 1 / span 2;
+    }
+
+    .terrain-workspace {
+        padding-right: 0;
+    }
+
+    .inspector-panel {
+        grid-column: 2;
+        border-left: none;
+        border-top: 1px solid var(--line);
+        padding: 28px 0;
+    }
+
+    .map-panel,
+    .map-container {
+        min-height: 350px;
+    }
+
+    .inspector-heading h2 {
+        font-size: 29px;
+    }
+
+}
+
+
+/* ---------------------------------------------------------
+   17. RESPONSIVE: MOBILE
+--------------------------------------------------------- */
+
+@media (max-width: 620px) {
+
+    .app-shell {
+        padding: 0 18px;
+    }
+
+    .topbar {
+        height: 68px;
+    }
+
+    .brand-name {
+        font-size: 18px;
+    }
+
+    .main-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .control-rail {
+        border-right: none;
+        border-bottom: 1px solid var(--line);
+
+        padding: 27px 0;
+    }
+
+    .rail-intro {
+        margin-bottom: 25px;
+    }
+
+    .rail-intro h1 {
+        font-size: 37px;
+    }
+
+    .terrain-workspace {
+        padding: 27px 0;
+    }
+
+    .map-container {
+        border-radius: 14px;
+    }
+
+    .results-heading h2 {
+        font-size: 25px;
+    }
+
+    .metrics-grid {
+        gap: 25px 18px;
+    }
+
+    .metric-value {
+        font-size: 27px;
+    }
+
+    .inspector-panel {
+        padding: 28px 0;
+    }
+
+    .inspector-heading h2 {
+        font-size: 32px;
+    }
+
+    .app-footer {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        padding: 15px 0;
+        gap: 8px 17px;
+        font-size: 12px;
+    }
+}
+
+
+/* =========================================================
+   18. COMPACT DESKTOP WORKSPACE — NO PAGE SCROLLING
+========================================================= */
+
+@media (min-width: 901px) {
+
+    html,
+    body {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .app-shell {
+        height: 100dvh;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .main-content {
+        height: calc(100dvh - 125px);
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    /* Keep the side panels within the available height */
+    .control-rail,
+    .inspector-panel {
+        min-height: 0;
+        overflow: hidden;
+        padding-top: 22px;
+        padding-bottom: 18px;
+    }
+
+    .rail-intro {
+        margin-bottom: 25px;
+    }
+
+    .rail-intro h1 {
+        font-size: clamp(32px, 2.5vw, 40px);
+    }
+
+    .tool-section {
+        margin-bottom: 23px;
+    }
+
+    .terrain-workspace {
+        min-height: 0;
+        height: 100%;
+        overflow: hidden;
+        padding: 18px 24px 16px;
+
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    /* Map takes the space left after the results */
+    .map-panel {
+        flex: 1 1 0;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .map-container {
+        flex: 1 1 0;
+        min-height: 0;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    /* Never let the PNG determine the page height */
+    .result-image {
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        object-position: center;
+    }
+
+    .map-footer {
+        flex-shrink: 0;
+        padding-top: 8px;
+    }
+
+    /* Compact results area */
+    .results-section {
+        flex: 0 0 auto;
+        margin-top: 0;
+        padding: 14px;
+    }
+
+    .results-heading {
+        margin-bottom: 12px;
+    }
+
+    .results-heading h2 {
+        font-size: 23px;
+    }
+
+    .metrics-grid {
+        gap: 12px 18px;
+        margin-bottom: 20px;
+    }
+
+    .metric-label {
+        font-size: 15px;
+        margin-bottom: 3px;
+    }
+
+    .metric-value {
+        font-size: clamp(22px, 2vw, 29px);
+    }
+
+    .metric-device {
+        font-size: 16px;
+    }
+
+    .metric-item > p {
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1.4;
+    }
+
+    .metric-item {
+        padding: 12px 10px;
+    }
+
+    .results-disclaimer {
+        margin-top: 10px;
+        font-size: 14px;
+        font-weight: 800;
+        line-height: 1.5;
+    }
+
+    /* Inspector spacing */
+    .inspector-heading {
+        margin-bottom: 10px;
+    }
+
+    .inspector-heading h2 {
+        font-size: 31px;
+    }
+
+    .inspector-description {
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.5;
+        margin-bottom: 15px;
+    }
+
+}
+
+
+/* =========================================================
+   19. CANDIDATE CARDS
+========================================================= */
+
+.candidate-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    min-width: 0;
+}
+
+.candidate-card {
+    position: relative;
+    min-width: 0;
+    padding: 14px;
+    background: var(--bg-raised);
+    border: 1px solid var(--line-strong);
+    border-left: 3px solid var(--accent-mustard);
+    border-radius: 12px;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.candidate-card:hover {
+    background: #353129;
+    transform: translateY(-1px);
+}
+
+.candidate-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 7px;
+}
+
+.candidate-id {
+    color: var(--text-primary);
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 0.1px;
+}
+
+.candidate-score {
+    flex-shrink: 0;
+    padding: 3px 8px;
+
+    color: var(--accent-mustard);
+    background: rgba(164, 153, 71, 0.13);
+    border-radius: 20px;
+
+    font-size: 13px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+}
+
+.candidate-coordinates {
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+/* Accept / reject actions */
+.candidate-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.review-button {
+    min-height: 33px;
+    padding: 6px 9px;
+
+    border: 1px solid transparent;
+    border-radius: 8px;
+
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 900;
+
+    transition:
+        transform 0.15s ease,
+        filter 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.review-button:hover {
+    filter: brightness(1.12);
+    transform: translateY(-1px);
+}
+
+.review-button:active {
+    transform: translateY(1px);
+}
+
+/* Accept: muted olive green */
+.review-button.accept {
+    color: #171A14;
+    background: #9AA786;
+    border-color: #B3C09D;
+    box-shadow: 0 3px 0 #687653;
+}
+
+.review-button.accept:hover {
+    box-shadow: 0 4px 0 #687653;
+}
+
+/* Reject: muted terracotta */
+.review-button.reject {
+    color: #211713;
+    background: #C98569;
+    border-color: #D99A7F;
+    box-shadow: 0 3px 0 #89533F;
+}
+
+.review-button.reject:hover {
+    box-shadow: 0 4px 0 #89533F;
+}
+
+.review-button.accept.is-selected {
+    border-color: #E1E9CF;
+    box-shadow: inset 0 0 0 2px rgba(23, 26, 20, 0.3), 0 1px 0 #687653;
+    transform: translateY(2px);
+}
+
+.review-button.reject.is-selected {
+    border-color: #F0C1AB;
+    box-shadow: inset 0 0 0 2px rgba(33, 23, 19, 0.3), 0 1px 0 #89533F;
+    transform: translateY(2px);
+}
+
+/* Review status after a decision */
+.review-status {
+    display: block;
+    margin-top: 9px;
+
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.review-status.is-accepted {
+    color: #9AA786;
+}
+
+.review-status.is-rejected {
+    color: #C98569;
+}
+
+
+/* =========================================================
+   20. SMALLER DESKTOP / LAPTOP HEIGHTS
+========================================================= */
+
+@media (min-width: 901px) and (max-height: 800px) {
+
+    .app-shell {
+        padding-left: 25px;
+        padding-right: 25px;
+    }
+
+    .topbar {
+        height: 65px;
+    }
+
+    .main-content {
+        height: calc(100dvh - 114px);
+    }
+
+    .control-rail,
+    .inspector-panel {
+        padding-top: 17px;
+        padding-bottom: 12px;
+    }
+
+    .rail-intro {
+        margin-bottom: 18px;
+    }
+
+    .rail-intro h1 {
+        font-size: 33px;
+        margin-bottom: 10px;
+    }
+
+    .rail-intro > p {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .tool-section {
+        margin-bottom: 17px;
+    }
+
+    .info-copy {
+        margin-top: 13px;
+        margin-bottom: 10px;
+    }
+
+    .info-copy p,
+    .threshold-hint p {
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.4;
+    }
+
+    .threshold-hint {
+        margin-top: 7px;
+    }
+
+    .terrain-workspace {
+        padding-top: 13px;
+        padding-bottom: 10px;
+    }
+
+    .results-section {
+        padding-top: 9px;
+    }
+
+    .results-disclaimer {
+        margin-top: 7px;
+    }
+
+    .inspector-heading h2 {
+        font-size: 27px;
+    }
+
+    .inspector-description {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .candidate-card {
+        padding: 11px;
+    }
+
+    .review-button {
+        min-height: 29px;
+        padding: 4px 7px;
+        font-size: 13px;
+    }
+}

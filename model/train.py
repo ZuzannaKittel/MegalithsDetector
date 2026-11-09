@@ -15,21 +15,30 @@ if str(project_root) not in sys.path:
 # Import the custom dataset class
 from dataset_prep.dataset import MegalithDataset
 
-def get_adapted_resnet():
+def get_adapted_resnet(pretrained=True):
     """Loads a pre-trained ResNet18 and adapts it for 1-channel LRM data."""
-    # Load standard pre-trained model
-    model = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
-    
-    # 1. Adapt the first convolutional layer for 1 channel (instead of 3 RGB channels)
+
+    weights = models.ResNet18_Weights.DEFAULT if pretrained else None
+    model = models.resnet18(weights=weights)
+
     original_conv = model.conv1
-    model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
-    
-    # Preserve pre-trained weights by averaging the RGB weights into the new single channel
-    with torch.no_grad():
-        model.conv1.weight[:] = original_conv.weight.mean(dim=1, keepdim=True)
-        
-    # 2. Adapt the final classification head for Binary Output (Megalith vs. Background)
+    model.conv1 = nn.Conv2d(
+        1, 64,
+        kernel_size=7,
+        stride=2,
+        padding=3,
+        bias=False
+    )
+
+    if pretrained:
+        with torch.no_grad():
+            model.conv1.weight[:] = original_conv.weight.mean(
+                dim=1,
+                keepdim=True
+            )
+
     model.fc = nn.Linear(model.fc.in_features, 1)
+
     return model
 
 def train_model():

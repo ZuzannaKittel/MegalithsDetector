@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MegalithsDetector</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@400;500;600;700;800&family=Pontano+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+<div class="app-shell">
+
+    <header class="topbar">
+        <a class="brand" href="/">
+            <span class="brand-name">MegalithsDetector</span>
+        </a>
+    </header>
+
+    <main class="main-content">
+        <aside class="control-rail">
+            <div class="rail-intro">
+                <h1>Explore<br>the terrain.</h1>
+                <p>Select an elevation dataset to begin searching for potential archaeological structures.</p>
+            </div>
+
+            <section class="tool-section">
+                <label for="dem-select" class="field-label">Elevation dataset</label>
+                <select id="dem-select">
+                    {% for filename in dem_files %}
+                    <option value="{{ filename }}">{{ filename }}</option>
+                    {% endfor %}
+                </select>
+            </section>
+
+            <section class="tool-section threshold-section">
+                <div class="threshold-heading">
+                    <label for="threshold" class="field-label">Confidence threshold</label>
+                    <span id="threshold-value" class="threshold-value">0.50</span>
+                </div>
+                <input
+                    type="range"
+                    id="threshold"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="0.5"
+                >
+
+                <div class="range-labels">
+                    <span>0.00</span>
+                    <span>1.00</span>
+                </div>
+                <div class="info-copy">
+                    <span class="info-mark">i</span>
+                    <p>Controls how confident the model must be before marking a potential barrow.</p>
+                </div>
+                <div class="threshold-hint">
+                    <span class="hint-dot"></span>
+                    <p><strong>Lower value</strong> = more candidates, including weaker predictions.</p>
+                </div>
+                <div class="threshold-hint">
+                    <span class="hint-dot hint-dot-olive"></span>
+                    <p><strong>Higher value</strong> = fewer candidates, but stronger model confidence.</p>
+                </div>
+            </section>
+
+            <section class="action-section">
+                <button id="scan-button" class="scan-button" type="button">
+                    <span id="scan-button-label">Run detection</span>
+                    <span class="button-arrow">↗</span>
+                </button>
+                <p id="scan-message" class="scan-message" aria-live="polite"></p>
+            </section>
+        </aside>
+
+        <section class="terrain-workspace">
+            <div class="map-panel">
+                <div id="map-container" class="map-container">
+                    <div id="map-placeholder" class="map-placeholder">
+                        <div class="terrain-symbol">
+                            <svg viewBox="0 0 220 140" fill="none" aria-hidden="true">
+                                <path d="M10 105 48 65l26 22 38-54 29 42 25-19 44 45" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="m10 119 39-35 27 22 37-38 29 28 25-18 43 31" stroke="currentColor" stroke-width="1.5" opacity=".65"/>
+                                <path d="m10 132 43-34 24 20 36-29 29 25 25-15 43 29" stroke="currentColor" stroke-width="1.2" opacity=".35"/>
+                                <path d="M10 105c25-26 48-35 69-23 20 12 35-14 55-28 25-18 52-4 76 19" stroke="currentColor" stroke-width="1" stroke-dasharray="4 5" opacity=".45"/>
+                            </svg>
+                        </div>
+                        <h2>No terrain loaded</h2>
+                        <p>Select an elevation dataset and run detection to explore the landscape.</p>
+                    </div>
+                    <img
+                        id="result-image"
+                        class="result-image hidden"
+                        alt="Terrain detection result"
+                    >
+                </div>
+                <div class="map-footer">
+                    <span>DIGITAL ELEVATED MODEL</span>
+                    <span>LOCAL DATA</span>
+                </div>
+            </div>
+
+            <section id="results-section" class="results-section hidden">
+                <div class="results-heading">
+                    <h2>Detection summary</h2>
+                    <span id="result-filename" class="result-filename"></span>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-label">Windows scanned</span>
+                        <span id="metric-windows" class="metric-value">—</span>
+                        <p>Number of terrain sections analysed by the model.</p>
+                    </div>
+
+                    <div class="metric-item">
+                        <span class="metric-label">Raw detections</span>
+                        <span id="metric-raw" class="metric-value">—</span>
+                        <p>Initial predictions before overlapping detections are filtered.</p>
+                    </div>
+
+                    <div class="metric-item metric-highlight">
+                        <span class="metric-label">Potential structures</span>
+                        <span id="metric-detections" class="metric-value">—</span>
+                        <p>Remaining candidates after detection filtering.</p>
+                    </div>
+
+                    <div class="metric-item">
+                        <span class="metric-label">Processing device</span>
+                        <span id="metric-device" class="metric-value metric-device">—</span>
+                        <p>Hardware used to run the detection model.</p>
+                    </div>
+
+                </div>
+            </section>
+            <p class="results-disclaimer">
+                    Model predictions are suggestions, not archaeological confirmations.
+                    Each candidate requires human verification.
+                </p>
+        </section>
+
+        <aside class="inspector-panel">
+            <div class="inspector-heading">
+                <h2>Potential<br>structures.</h2>
+                <span id="review-count" class="review-count">0</span>
+            </div>
+            <p class="inspector-description">Review the locations identified by the model. Examine each candidate and decide whether it resembles a genuine archaeological structure.</p>
+            <div id="candidate-list" class="candidate-list">
+                <div class="empty-review">
+                    <div class="info-copy">
+                        <span class="info-mark">i</span>
+                        <h3>Nothing to review yet</h3>
+                    </div>
+                    <p>Run detection to generate potential structures.</p>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <footer class="app-footer">
+        <span>MegalithsDetector</span>
+        <span>KUJAVIAN LONG BARROWS</span>
+        <span>4000–3000 BCE</span>
+    </footer>
+</div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
