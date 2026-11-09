@@ -1,135 +1,185 @@
-# Megaliths Detector: AI-Powered Archaeological Feature Detection on LiDAR Data
+# MegalithsDetector
 
-An end-to-end geospatial machine learning pipeline designed to automatically detect prehistoric Kuyavian long barrows (*grobowce kujawskie*, c. 4000–3000 BCE) in Poland using high-resolution LiDAR Digital Elevation Models (DEM) from the Polish Geoportal.
+**An end-to-end geospatial machine learning application for screening LiDAR-derived elevation data for prehistoric archaeological structures.**
 
-The project processes raw 2.5D ESRI ASCII elevation grids (`.asc`), isolates microtopographic features via Local Relief Modeling (LRM), injects procedurally generated synthetic barrows to combat class imbalance, trains an adapted 1-channel ResNet-18 model on Apple Silicon (MPS), and performs sliding-window inference with Non-Maximum Suppression (NMS).
+MegalithsDetector explores the detection of **Kuyavian long barrows** (*grobowce kujawskie*), prehistoric monumental tombs dating to approximately 4000–3000 BCE, in Poland.
 
----
+The project combines terrain preprocessing, synthetic data generation, deep learning and an interactive Flask interface to identify terrain windows that may contain archaeological features.
 
-## Key Features
+<!-- Add an application screenshot here, e.g.:
+![MegalithsDetector interface](docs/images/interface.png)
+-->
+<img width="1758" height="1109" alt="image" src="https://github.com/user-attachments/assets/fec1eba1-7795-447f-bc40-0d3ee453dc3d" />
 
-* **Geospatial Preprocessing & LRM:** Subtraction of Gaussian-filtered trend surfaces ($\sigma = 20.0$) from raw DEMs to decouple shallow microtopographic mounds (1 m height) from macro-terrain slopes.
-* **Human-in-the-Loop Visualization:** Generates high-contrast 3D hillshade PNG tiles ($512 \times 512$ m) using cartographic North-West ($315^\circ$) lighting, $3\times$ vertical Z-exaggeration, and low sun angles ($20^\circ$) for expert domain tagging.
-* **Chaotic Synthetic Barrow Generator:** Procedurally generates realistic, weathered 3D trapezoidal barrows (tapering width, broad head, narrow tail, excavation ditches, irregular looting pits, and erosion noise) blended onto background terrain to augment sparse ground-truth data.
-* **Adapted Vision Architecture:** Surgically modifies pre-trained ResNet-18 to accept 1-channel spatial elevation matrices natively, preserving learned visual filters by averaging pre-trained RGB weights into the new input conv layer.
-* **Apple Silicon Hardware Acceleration:** Native Metal Performance Shaders (`mps`) support for high-speed training and inference on Apple M-series chips.
-* **Sliding-Window Inference & NMS:** Scans entire map sheets with a 50% overlapping stride, normalizes inputs via Z-score standardization, applies Intersection over Union (IoU = 0.3) Non-Maximum Suppression to collapse duplicate window hits, and extracts individual cropped PNG tiles for every detection.
+## Features
 
----
+- **Terrain preprocessing:** Converts ESRI ASCII elevation grids into Local Relief Models (LRM) to highlight local topographic features.
+- **Patch generation:** Extracts overlapping 512 × 512 terrain patches for visual inspection and model training.
+- **Synthetic data generation:** Procedurally creates weathered, trapezoidal long-barrow-like structures to supplement a limited set of positive examples.
+- **Deep learning:** Uses an ImageNet-pretrained ResNet-18 adapted to accept single-channel elevation data.
+- **Spatially separated evaluation:** Splits labelled samples by their original DEM source to reduce spatial leakage between training and validation.
+- **Full-map inference:** Applies sliding-window classification and Non-Maximum Suppression (NMS) to identify potential structures.
+- **Interactive review:** Provides a Flask web interface for selecting DEM files, adjusting the detection threshold, viewing annotated maps and reviewing individual candidates.
 
-## Directory Structure
-
-```text
-megaliths-detector/
-├── .gitignore                      # Prevents heavy .asc, .npy, and .png data from tracking
-├── README.md                       # Documentation
-├── requirements.txt                # Python environment dependencies
-├── best_megalith_model.pth         # Saved weights for top-performing model checkpoint
-│
-├── data/                           # Local data directory (Ignored by Git)
-│   ├── raw/                        # Input ESRI ASCII raster grids (.asc from Geoportal)
-│   ├── processed/                  # Full-scale in-memory LRM outputs
-│   ├── dataset/
-│   │   ├── arrays_npy/             # Clean 512x512 float32 LRM numpy matrices
-│   │   ├── images_png/             # 3D hillshade PNG tiles for expert visual inspection
-│   │   └── train/
-│   │       ├── positive/           # Verified real + synthetic barrow arrays
-│   │       └── negative/           # Barren terrain background arrays
-│   └── predictions/
-│       ├── predicted_*.png         # Full map sheets with red detection bounding boxes
-│       └── crops/                  # Individual cropped 512x512 PNG tiles per detection
-│
-├── dataset_prep/                   # Data processing and augmentation modules
-│   ├── process_and_patch.py        # Converts .asc -> LRM, slices 512x512 tiles with 256m stride
-│   ├── generate_synthetic.py       # Procedural barrow synthesis and blending script
-│   ├── map_labels.py               # Links expert-sorted PNG tags back to .npy arrays
-│   └── dataset.py                  # PyTorch Custom Dataset class with geometric augmentations
-│
-└── model/                          # Machine learning architecture & execution
-    ├── train.py                    # PyTorch training loop, MPS device target, loss evaluation
-    └── predict.py                  # Full-map sliding window inference engine with NMS
-```
-
----
-
-## Workflow & Pipeline
+## Pipeline
 
 ```text
-[Raw .asc DEM] ──> [LRM Extraction] ──> [Sliding Window 512x512] ──> [3D Hillshade PNGs]
-                                                                            │
-                                                                  (Expert Tagging by Archeologist)
-                                                                            │
-                                                                            ▼
-[Trained ResNet-18] <── [Z-Score Norm + Augmentation] <── [Real Tags + Synthetic Generation]
-        │
-        ▼
-[Full Map Scan] ──> [Sliding Window Inference] ──> [NMS Box Merging] ──> [Annotated Maps & Crop Tiles]
+      ESRI ASCII DEM
+             |
+             v
+    Local Relief Model
+             |
+             v
+   512 x 512 terrain patches
+             |
+       +-----+------+
+       |            |
+       v            v
+  Expert labels   Synthetic
+  (real samples)  augmentation
+       |            |
+       +-----+------+
+             |
+             v
+    Spatial train/validation
+             split
+             |
+             v
+    ResNet-18 training
+             |
+             v
+      Trained model
+             |
+             v
+     Full-map inference
+             |
+             v
+   Non-Maximum Suppression
+             |
+             v
+   Annotated map + candidate
+        review interface
 ```
 
-### 1. Preprocessing & Tile Generation
-Raw ESRI ASCII raster files placed in `data/raw/` are processed into Local Relief Models to strip away regional elevation trends:
-$$\text{LRM} = \text{DEM} - \text{GaussianFilter}(\text{DEM}, \sigma = 20.0)$$
-The resulting map is sliced into overlapping $512 \times 512$ m patches using a 256-meter stride (50% overlap).
+## Technical approach
 
-### 2. Expert Human Labeling
-Cartographically shaded PNGs are generated with $315^\circ$ light angles to prevent relief inversion. The expert sorts these PNGs into `positive` and `negative` folders.
+**Terrain representation**
 
-### 3. Synthetic Augmentation & Data Normalization
-`generate_synthetic.py` blends procedurally modeled trapezoidal long barrows into negative tiles, introducing random rotational angles, spatial offsets, structural weathering, and looting craters. Inputs are normalized on the fly using Z-score standardization:
-$$x_{\text{norm}} = \frac{x - \mu}{\sigma}$$
+The pipeline computes a Local Relief Model by subtracting a Gaussian-filtered elevation trend from the original DEM:
 
-### 4. Model Adaptation & Training
-Training uses PyTorch on `torch.device("mps")`:
-* **Backbone:** ResNet-18 (Conv1 adapted from 3 RGB channels to 1 channel).
-* **Augmentations:** Random horizontal/vertical flips and $90^\circ, 180^\circ, 270^\circ$ spatial rotations.
-* **Loss Function:** `BCEWithLogitsLoss()`
-* **Optimizer:** `AdamW(lr=1e-4, weight_decay=1e-2)`
+\[
+LRM = DEM - GaussianFilter(DEM, \sigma=20)
+\]
 
-### 5. Inference & NMS Box Merging
-`predict.py` loads `best_megalith_model.pth`, calculates LRM across target map sheets, and slides a $512 \times 512$ window across the terrain. Overlapping window triggers are merged using Non-Maximum Suppression (IoU = 0.3) based on confidence scores.
+The resulting terrain representation emphasizes local relief rather than broader elevation differences. Patches are extracted using a 512-pixel window and a 256-pixel stride.
 
----
+**Synthetic augmentation**
 
-## Quick Start Guide
+A procedural generator creates synthetic long-barrow-like structures with varying dimensions, orientations, erosion, surface irregularities and excavation features. These are blended into background terrain patches and added to the training set.
 
-### Prerequisites
-* Python 3.10+
-* macOS with Apple Silicon (M-series GPU) or CUDA/CPU system
+**Model architecture**
 
-### Setup & Run
+The classifier is based on ResNet-18 with its first convolution adapted from three input channels to one. Pretrained RGB convolution weights are averaged to initialize the single-channel layer.
+
+Training uses PyTorch, `BCEWithLogitsLoss` and the AdamW optimizer. The implementation supports Apple Silicon MPS, CUDA and CPU execution.
+
+**Inference**
+
+The trained model evaluates overlapping terrain windows across a complete DEM. Predictions above a user-defined sigmoid-score threshold are filtered using Non-Maximum Suppression (IoU = 0.3) to reduce overlapping candidate windows.
+
+## Interactive application
+
+The Flask application provides:
+
+- DEM selection and configurable detection threshold.
+- Annotated terrain visualisation.
+- Scan statistics, including evaluated windows and detections before and after NMS.
+- Candidate-level model scores and map coordinates.
+- Accept/reject controls for human review.
+
+## Getting started
+
+### Requirements
+
+- Python 3.10+
+- PyTorch and Torchvision
+- Flask
+- NumPy, SciPy, Matplotlib and Pillow
+
+### Installation
+
 ```bash
-# 1. Clone repository
-git clone [https://github.com/ZuzannaKittel/MegalithsDetector.git](https://github.com/ZuzannaKittel/MegalithsDetector.git)
+git clone https://github.com/ZuzannaKittel/MegalithsDetector.git
 cd MegalithsDetector
 
-# 2. Activate virtual environment & install dependencies
+python -m venv megaliths_venv
 source megaliths_venv/bin/activate
+
 pip install -r requirements.txt
-
-# 3. Process raw .asc files into patches
-python dataset_prep/process_and_patch.py
-
-# 4. Generate synthetic barrows to expand training set
-python dataset_prep/generate_synthetic.py
-
-# 5. Train the neural network on Apple Silicon
-python model/train.py
-
-# 6. Run full-map inference & generate detection crops
-python model/predict.py
 ```
+
+### Prepare the dataset and train
+
+Place source `.asc` DEM files in `data/raw/`.
+
+Run the preprocessing and patch-generation script:
+
+```bash
+python dataset_prep/process_and_patch.py
+```
+
+After inspecting and manually labelling the generated terrain patches, prepare the spatially separated dataset:
+
+```bash
+python dataset_prep/map_labels.py
+```
+
+Generate synthetic training samples:
+
+```bash
+python dataset_prep/generate_synthetic_barrows.py
+```
+
+Train the model:
+
+```bash
+python model/train.py
+```
+
+Training saves the best checkpoint as `best_megalith_model.pth` in the project root.
+
+### Run the application
+
+With a trained checkpoint and source DEM files available:
+
+```bash
+python app.py
+```
+
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
+
+Scanned maps are saved locally under `static/results/`.
+
+## Limitations
+
+This is an experimental archaeological screening tool, not an automated archaeological identification system.
+
+- The available labelled dataset is small and covers only a limited number of DEM tiles.
+- Validation currently uses a single held-out DEM and only three real positive patches. Its metrics are therefore not a reliable estimate of performance on unseen geographic areas.
+- Synthetic samples supplement, but do not replace, real archaeological examples.
+- Model scores are not calibrated probabilities.
+- Detection boxes represent evaluated terrain windows, not precise archaeological boundaries.
+
+All candidates require expert inspection and independent archaeological verification.
+
+## Technologies
+
+`Python` · `PyTorch` · `Torchvision` · `ResNet-18` · `NumPy` · `SciPy` · `Matplotlib` · `Flask` · `JavaScript` · `HTML` · `CSS`
 
 ---
 
-## Predictions & Review Outputs
+**Author:**
 
-After running `predict.py`, inspect `data/predictions/`:
-1. **`predicted_[map_name].png`**: Complete visual map sheet featuring solid red $512 \times 512$ m bounding boxes around all merged detections.
-2. **`data/predictions/crops/[map_name]/`**: Isolated, individual PNG crops named with confidence percentages and world coordinates (e.g., `det_01_conf_97pct_PL1992_X49_Y50.png`) ready for immediate expert verification.
-
-
-## Results example (png)
-<img width="2128" height="2320" alt="predicted_3840_88386_N-34-122-D-d-1-1" src="https://github.com/user-attachments/assets/940514ce-7a0f-406a-9039-b93e7c7ffdca" />
-
+[GitHub repository](https://github.com/ZuzannaKittel/MegalithsDetector)
 
 Copyright (c) 2026 Zuzanna Kittel
