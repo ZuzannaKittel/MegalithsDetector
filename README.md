@@ -125,4 +125,11 @@ python model/predict.py
 
 After running `predict.py`, inspect `data/predictions/`:
 1. **`predicted_[map_name].png`**: Complete visual map sheet featuring solid red $512 \times 512$ m bounding boxes around all merged detections.
-2. **`data/predictions/crops/[map_name]/`**: Isolated, individual PNG crops named with confidence percentages (e.g., `detection_01_conf_97pct_x0_y1024.png`) ready for immediate expert verification.
+2. **`data/predictions/crops/[map_name]/`**: Isolated, individual PNG crops named with confidence percentages and world coordinates (e.g., `det_01_conf_97pct_PL1992_X49_Y50.png`) ready for immediate expert verification.
+
+
+## Results example (png)
+<img width="2128" height="2320" alt="predicted_3840_88386_N-34-122-D-d-1-1" src="https://github.com/user-attachments/assets/940514ce-7a0f-406a-9039-b93e7c7ffdca" />
+
+
+Copyright (c) 2026 Zuzanna Kittel
