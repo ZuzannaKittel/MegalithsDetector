@@ -130,3 +130,6 @@ After running `predict.py`, inspect `data/predictions/`:
 
 ## Results example (png)
 <img width="2128" height="2320" alt="predicted_3840_88386_N-34-122-D-d-1-1" src="https://github.com/user-attachments/assets/940514ce-7a0f-406a-9039-b93e7c7ffdca" />
+
+
+Copyright (c) 2026 Zuzanna Kittel
